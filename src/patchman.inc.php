@@ -136,7 +136,7 @@ function patchman_req($page, $post = '', $options = FALSE) {
 	if ($options === FALSE)
 		$options = [];
 	$defaultOptions = [
-		CURLOPT_USERPWD => DIRECTADMIN_USERNAME.':'.DIRECTADMIN_PASSWORD,
+		CURLOPT_USERPWD => PATCHMAN_USERNAME.':'.PATCHMAN_PASSWORD,
 		CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
 		CURLOPT_SSL_VERIFYHOST => FALSE,
 		CURLOPT_SSL_VERIFYPEER => FALSE
@@ -230,9 +230,9 @@ function activate_patchman($ipAddress, $ostype, $pass, $email, $name, $domain = 
 			CURLOPT_REFERER => 'https://www.patchman.com/clients/createlicense.php'
 		];
 		$post = [
-			'uid' =>  DIRECTADMIN_USERNAME,
-			'id' => DIRECTADMIN_USERNAME,
-			'password' => DIRECTADMIN_PASSWORD,
+			'uid' =>  PATCHMAN_USERNAME,
+			'id' => PATCHMAN_USERNAME,
+			'password' => PATCHMAN_PASSWORD,
 			'api' => 1,
 			'name' => $name,
 			'pid' => 2712,
@@ -278,8 +278,8 @@ function deactivate_patchman($ipAddress) {
 	if ($license['active'] == 'Y') {
 		$url = 'https://www.patchman.com/cgi-bin/deletelicense';
 		$post = [
-			'uid' => DIRECTADMIN_USERNAME,
-			'password' => DIRECTADMIN_PASSWORD,
+			'uid' => PATCHMAN_USERNAME,
+			'password' => PATCHMAN_PASSWORD,
 			'api' => 1,
 			'lid' => $license['lid']
 		];
@@ -309,9 +309,9 @@ function patchman_makepayment($lid) {
 	$url = 'https://www.patchman.com/cgi-bin/makepayment';
 	$referer = 'https://www.patchman.com/clients/makepayment.php';
 	$post = [
-		'uid' => DIRECTADMIN_USERNAME,
-		'id' => DIRECTADMIN_USERNAME,
-		'password' => DIRECTADMIN_PASSWORD,
+		'uid' => PATCHMAN_USERNAME,
+		'id' => PATCHMAN_USERNAME,
+		'password' => PATCHMAN_PASSWORD,
 		'api' => 1,
 		'action' => 'pay',
 		'lid' => $lid

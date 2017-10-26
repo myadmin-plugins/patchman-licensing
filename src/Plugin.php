@@ -43,7 +43,7 @@ class Plugin {
 	 */
 	public static function getActivate(GenericEvent $event) {
 		$serviceClass = $event->getSubject();
-		if ($event['category'] == get_service_define('DIRECTADMIN')) {
+		if ($event['category'] == get_service_define('PATCHMAN')) {
 			myadmin_log(self::$module, 'info', 'Patchman Activation', __LINE__, __FILE__);
 			function_requirements('patchman_get_best_type');
 			function_requirements('activate_patchman');
@@ -57,7 +57,7 @@ class Plugin {
 	 */
 	public static function getDeactivate(GenericEvent $event) {
 		$serviceClass = $event->getSubject();
-		if ($event['category'] == get_service_define('DIRECTADMIN')) {
+		if ($event['category'] == get_service_define('PATCHMAN')) {
 			myadmin_log(self::$module, 'info', 'Patchman Deactivation', __LINE__, __FILE__);
 			function_requirements('deactivate_patchman');
 			deactivate_patchman($serviceClass->getIp());
@@ -69,7 +69,7 @@ class Plugin {
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
 	public static function getChangeIp(GenericEvent $event) {
-		if ($event['category'] == get_service_define('DIRECTADMIN')) {
+		if ($event['category'] == get_service_define('PATCHMAN')) {
 			$serviceClass = $event->getSubject();
 			$settings = get_module_settings(self::$module);
 			$patchman = new \Patchman(FANTASTICO_USERNAME, FANTASTICO_PASSWORD);
@@ -124,9 +124,9 @@ class Plugin {
 	 */
 	public static function getSettings(GenericEvent $event) {
 		$settings = $event->getSubject();
-		$settings->add_text_setting(self::$module, 'PatchMan', 'patchman_username', 'Patchman Username:', 'Patchman Username', $settings->get_setting('DIRECTADMIN_USERNAME'));
-		$settings->add_text_setting(self::$module, 'PatchMan', 'patchman_password', 'Patchman Password:', 'Patchman Password', $settings->get_setting('DIRECTADMIN_PASSWORD'));
-		$settings->add_dropdown_setting(self::$module, 'PatchMan', 'outofstock_licenses_patchman', 'Out Of Stock PatchMan Licenses', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_LICENSES_DIRECTADMIN'), ['0', '1'], ['No', 'Yes']);
+		$settings->add_text_setting(self::$module, 'PatchMan', 'patchman_username', 'Patchman Username:', 'Patchman Username', $settings->get_setting('PATCHMAN_USERNAME'));
+		$settings->add_text_setting(self::$module, 'PatchMan', 'patchman_password', 'Patchman Password:', 'Patchman Password', $settings->get_setting('PATCHMAN_PASSWORD'));
+		$settings->add_dropdown_setting(self::$module, 'PatchMan', 'outofstock_licenses_patchman', 'Out Of Stock PatchMan Licenses', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_LICENSES_PATCHMAN'), ['0', '1'], ['No', 'Yes']);
 	}
 
 }
