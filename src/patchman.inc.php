@@ -7,123 +7,69 @@
 * @category Licenses
 */
 
-function get_patchman_license_types() {
-	return [
-		'ES 5.0'			=>		'CentOS 5 32-bit',
-		'ES 5.0 64'			=>		'CentOS 5 64-bit',
-		'ES 6.0'			=>		'CentOS 6 32-bit',
-		'ES 6.0 64'			=>		'CentOS 6 64-bit',
-		'ES 7.0 64'			=>		'CentOS 7 64-bit',
-		'FreeBSD 8.0 64'	=>		'FreeBSD 8.x 64-bit',
-		'FreeBSD 9.1 32'	=>		'FreeBSD 9.x 32-bit',
-		'FreeBSD 9.0 64'	=>		'FreeBSD 9.x 64-bit',
-		'Debian 5'			=>		'Debian 5.0 32-bit',
-		'Debian 5 64'		=>		'Debian 5.0 64-bit',
-		'Debian 6'			=>		'Debian 6.0 32-bit',
-		'Debian 6 64'		=>		'Debian 6.0 64-bit',
-		'Debian 7'			=>		'Debian 7.0 32-bit',
-		'Debian 7 64'		=>		'Debian 7.0 64-bit',
-		'Debian 8 64'		=>		'Debian 8.0 64-bit'
-	];
-}
 
-/**
- * @param string $module
- * @param $packageId
- * @param bool $order
- * @param bool|array $extra
- * @return bool|string
- */
-function patchman_get_best_type($module, $packageId, $order = FALSE, $extra = FALSE) {
-	$types = get_patchman_license_types();
-	$osi = get_os_index_names();
-	$osi = get_os_index_files();
-	$db = get_module_db($module);
-	$found = FALSE;
-	$parts = [];
-	$settings = \get_module_settings($module);
-	$db->query("select * from services where services_id={$packageId}");
-	if ($db->next_record(MYSQL_ASSOC)) {
-		if ($module == 'licenses')
-			return $db->Record['services_field1'];
-		$service = $db->Record;
-		if ($db->Record['services_field1'] != 'slice') {
-			$parts = explode(' ', $db->Record['services_name']);
-			$parts[3] = trim(str_replace(['-', 'bit'], ['', ''], $parts[3]));
-		}
-		if ($extra === FALSE)
-			$extra = ['os' => '', 'version' => ''];
+function add_patchman() {
+	$module = $GLOBALS['tf']->variables->request['module'];
+	$id = $GLOBALS['tf']->variables->request['id'];
+	$serviceInfo = get_service($id, $module);
+	$serviceSettings = get_module_settings($module);
+	$settings = get_module_settings('licenses');
+	$frequency = 1;
+	$now = mysql_now();
+	$custid = $serviceInfo[$serviceSettings['PREFIX'].'_custid'];
+	$service_cost = 20;
+	$package_id = 5081;
+	$ip = $serviceInfo[$serviceSettings['PREFIX'].'_ip'];
+	if (!isset($GLOBALS['tf']->variables->request['confirm'])) {
+		$table = new TFTable;
+		$table->set_title('Add Patchman');
+		$table->add_hidden('id', $id);
+		$table->add_hidden('module', $module);
+		$table->add_field('Service');
+		$table->add_field($id);
+		$table->add_row();
+		$table->add_field('Module');
+		$table->add_field($module);
+		$table->add_row();
+		$table->add_field('IP');
+		$table->add_field($ip);
+		$table->add_row();
+		$table->set_colspan(2);
+		$table->add_field($table->make_submit('Confirm', 'confirm'));
+		$table->add_row();
+		add_output($table->get_table());
+	} else {
+		$repeat_invoice = new \MyAdmin\Orm\Repeat_Invoice($db);
+		$repeat_invoice->set_description('Patchman')
+			->set_type(1)
+			->set_custid($custid)
+			->set_cost($service_cost)
+			->setFrequency($frequency)
+			->set_date($now)
+			->set_module('licenses')
+			->save();
+		$rid = $repeat_invoice->get_id();
+		$invoice = $repeat_invoice->invoice($now, $service_cost, FALSE);
+		$iid = $invoice->get_id();
+		$db->query(make_insert_query($settings['TABLE'], [
+			$settings['PREFIX'].'_id' => null,
+			$settings['PREFIX'].'_type' => $package_id,
+			$settings['PREFIX'].'_custid' => $custid,
+			$settings['PREFIX'].'_cost' => $service_cost,
+			$settings['PREFIX'].'_frequency' => $frequency,
+			$settings['PREFIX'].'_order_date' => $now,
+			$settings['PREFIX'].'_ip' => $ip,
+			$settings['PREFIX'].'_status' => 'active',
+			$settings['PREFIX'].'_invoice' => $rid,
+			$settings['PREFIX'].'_hostname' => ''
+		]), __LINE__, __FILE__);
+		$serviceid = $db->getLastInsertId($settings['TABLE'], $settings['PREFIX'].'_id');
+		$repeat_invoice->set_service($serviceid)->save();
+		$invoice->set_service($serviceid)->save();
+		add_output('Patchman License Added');
 	}
-	if (!isset($extra['os']) || $extra['os'] == '') {
-		if (in_array($service['services_type'], [get_service_define('KVM_LINUX'), get_service_define('CLOUD_KVM_LINUX')])) {
-			$extra['os'] = 'centos5';
-		} elseif (in_array($service['services_type'], [get_service_define('OPENVZ'), get_service_define('SSD_OPENVZ')])) {
-			$db->query("select * from {$settings['PREFIX']}_masters where {$settings['PREFIX']}_id={$order[$settings['PREFIX'].'_server']}");
-			$db->next_record(MYSQL_ASSOC);
-			if ($db->Record[$settings['PREFIX'].'_bits'] == 32)
-				$extra['os'] = 'centos-6-x86.tar.gz';
-			else
-				$extra['os'] = 'centos-6-x86_64.tar.gz';
-		}
-	}
-	if (isset($extra['os'])) {
-		$db->query("select * from vps_templates where template_file='".$db->real_escape($extra['os'])."' limit 1", __LINE__, __FILE__);
-		if ($db->num_rows() > 0) {
-			$db->next_record(MYSQL_ASSOC);
-			$found = TRUE;
-			$parts = [$db->Record['template_os'], $db->Record['template_version'], $db->Record['template_bits']];
-		}
-	}
-	if ($found == FALSE) {
-		if (is_numeric($extra['os'])) {
-			$parts[0] = $osi[$extra['os']];
-			if (!isset($extra['version']) || $extra['version'] == 2 || $extra['version'] == 64)
-				$parts[2] = 64;
-			else
-				$parts[2] = 32;
-			$template = $osi[$extra['os']];
-			$db->query("select * from vps_templates where template_file='".$db->real_escape($template)."' limit 1", __LINE__, __FILE__);
-			if ($db->num_rows() > 0) {
-				$db->next_record(MYSQL_ASSOC);
-				$found = TRUE;
-				$parts = [$db->Record['template_os'], $db->Record['template_version'], $db->Record['template_bits']];
-			} else {
-				$parts = explode('-', $template);
-			}
-		}
-	}
-	if (in_array(strtolower($parts[2]), ['i386', 'i586', 'x86']))
-		$parts[2] = 32;
-	elseif (in_array(strtolower($parts[2]), ['amd64', 'x86-64']))
-		$parts[2] = 64;
-	if (in_array(strtolower($db->Record['template_os']), ['debian', 'ubuntu']))
-		$parts[0] = 'Debian';
-	elseif (in_array(strtolower($db->Record['template_os']), ['freebsd', 'openbsd']))
-		$parts[0] = 'FreeBSD';
-	elseif (in_array(strtolower($db->Record['template_os']), ['centos', 'fedora', 'rhel', 'redhat']))
-		$parts[0] = 'ES';
-	else
-		$parts[0] = $db->Record['template_os'];
-	if (strtolower($parts[0]) == 'FreeBSD') {
-		if ($parts[3] == 32)
-			$parts[2] = '9.1';
-		elseif (mb_substr($parts[2], 0, 1) == 8)
-			$parts[2] = '8.0';
-		elseif (mb_substr($parts[2], 0, 1) == 9)
-			$parts[2] = '9.0';
-	} elseif (!isset($parts[3]) || $parts[3] == 32)
-			$parts[3] = '';
-	if ($parts[0] == 'ES')
-		$parts[1] = mb_substr($parts[1], 0, 1).'.0';
-	else
-		$parts[1] = mb_substr($parts[1], 0, 1);
-	$daType = trim("{$parts[0]} {$parts[1]} {$parts[2]}");
-	if (isset($types[$daType])) {
-		myadmin_log('licenses', 'info', "Matched DA Type for $types[$daType] to {$daType}", __LINE__, __FILE__);
-		return $daType;
-	} else
-		myadmin_log('licenses', 'info', "Couldn't find matching da type from os {$daType}", __LINE__, __FILE__);
-	return FALSE;
+
+
 }
 
 /**
@@ -154,7 +100,7 @@ function patchman_req($page, $post = '', $options = FALSE) {
 		if (mb_strpos($page, 'clients/') === FALSE)
 			$page == "clients/{$page}";
 		if (!is_url($page))
-			$page = "https://www.patchman.com/{$page}";
+			$page = "https://www.patchman.co/{$page}";
 	}
 	return trim(getcurlpage($page, $post, $options));
 }
@@ -301,25 +247,3 @@ function patchman_deactivate($ipAddress) {
 	return deactivate_patchman($ipAddress);
 }
 
-/**
- * @param string $lid
- * @return string
- */
-function patchman_makepayment($lid) {
-	$url = 'https://www.patchman.com/cgi-bin/makepayment';
-	$referer = 'https://www.patchman.com/clients/makepayment.php';
-	$post = [
-		'uid' => PATCHMAN_USERNAME,
-		'id' => PATCHMAN_USERNAME,
-		'password' => PATCHMAN_PASSWORD,
-		'api' => 1,
-		'action' => 'pay',
-		'lid' => $lid
-	];
-	$options = [
-		CURLOPT_REFERER => $referer
-	];
-	$response = patchman_req($url, $post, $options);
-	myadmin_log('licenses', 'info', $response, __LINE__, __FILE__);
-	return $response;
-}

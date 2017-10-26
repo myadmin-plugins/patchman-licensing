@@ -13,7 +13,7 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 class Plugin {
 
 	public static $name = 'PatchMan Licensing';
-	public static $description = 'Allows selling of PatchMan Server and VPS License Types.  More info at https://www.patchman.com/';
+	public static $description = 'Allows selling of PatchMan Licenses.  More info at https://www.patchman.com/';
 	public static $help = '';
 	public static $module = 'licenses';
 	public static $type = 'service';
@@ -45,9 +45,8 @@ class Plugin {
 		$serviceClass = $event->getSubject();
 		if ($event['category'] == get_service_define('PATCHMAN')) {
 			myadmin_log(self::$module, 'info', 'Patchman Activation', __LINE__, __FILE__);
-			function_requirements('patchman_get_best_type');
-			function_requirements('activate_patchman');
-			activate_patchman($serviceClass->getIp(), patchman_get_best_type(self::$module, $serviceClass->getType()), $event['email'], $event['email'], self::$module.$serviceClass->getId(), '');
+			//function_requirements('activate_patchman');
+			//activate_patchman($serviceClass->getIp(), patchman_get_best_type(self::$module, $serviceClass->getType()), $event['email'], $event['email'], self::$module.$serviceClass->getId(), '');
 			$event->stopPropagation();
 		}
 	}
@@ -59,8 +58,9 @@ class Plugin {
 		$serviceClass = $event->getSubject();
 		if ($event['category'] == get_service_define('PATCHMAN')) {
 			myadmin_log(self::$module, 'info', 'Patchman Deactivation', __LINE__, __FILE__);
-			function_requirements('deactivate_patchman');
-			deactivate_patchman($serviceClass->getIp());
+			//function_requirements('deactivate_patchman');
+			//deactivate_patchman($serviceClass->getIp());
+			mail('support@interserver.net', 'Patchman Deactivation for '.$serviceClass->getIp(), 'Patchman Deactivation for '.$serviceClass->getIp(), get_default_mail_headers());
 			$event->stopPropagation();
 		}
 	}
@@ -106,17 +106,9 @@ class Plugin {
 	 */
 	public static function getRequirements(GenericEvent $event) {
 		$loader = $event->getSubject();
-		$loader->add_requirement('get_patchman_license_types', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
-		$loader->add_page_requirement('patchman_get_best_type', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
-		$loader->add_page_requirement('patchman_req', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
-		$loader->add_requirement('get_patchman_licenses', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
-		$loader->add_requirement('get_patchman_license', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
-		$loader->add_requirement('get_patchman_license_by_ip', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
-		$loader->add_page_requirement('patchman_ip_to_lid', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
+		$loader->add_admin_page_requirement('add_patchman', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
 		$loader->add_requirement('activate_patchman', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
 		$loader->add_requirement('deactivate_patchman', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
-		$loader->add_requirement('patchman_deactivate', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
-		$loader->add_page_requirement('patchman_makepayment', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
 	}
 
 	/**
