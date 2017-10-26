@@ -14,12 +14,18 @@ function add_patchman() {
 	$serviceInfo = get_service($id, $module);
 	$serviceSettings = get_module_settings($module);
 	$settings = get_module_settings('licenses');
+	$db = get_module_db($module);
 	$frequency = 1;
 	$now = mysql_now();
 	$custid = $serviceInfo[$serviceSettings['PREFIX'].'_custid'];
 	$service_cost = 20;
 	$package_id = 5081;
 	$ip = $serviceInfo[$serviceSettings['PREFIX'].'_ip'];
+	$db->query("select * from {$settings['TABLE']} where {$settings['PREFIX']}_type={$package_id} and {$settings['PREFIX']}_custid={$custid} and {$settings['PREFIX']}_ip='{$ip}'");
+	if ($db->num_rows() > 0) {
+		add_output('IP '.$ip.' Already Licensed for PatchMan');
+		return;
+	}
 	if (!isset($GLOBALS['tf']->variables->request['confirm'])) {
 		$table = new TFTable;
 		$table->set_title('Add Patchman');
@@ -38,36 +44,36 @@ function add_patchman() {
 		$table->add_field($table->make_submit('Confirm', 'confirm'));
 		$table->add_row();
 		add_output($table->get_table());
-	} else {
-		$repeat_invoice = new \MyAdmin\Orm\Repeat_Invoice($db);
-		$repeat_invoice->set_description('Patchman')
-			->set_type(1)
-			->set_custid($custid)
-			->set_cost($service_cost)
-			->setFrequency($frequency)
-			->set_date($now)
-			->set_module('licenses')
-			->save();
-		$rid = $repeat_invoice->get_id();
-		$invoice = $repeat_invoice->invoice($now, $service_cost, FALSE);
-		$iid = $invoice->get_id();
-		$db->query(make_insert_query($settings['TABLE'], [
-			$settings['PREFIX'].'_id' => null,
-			$settings['PREFIX'].'_type' => $package_id,
-			$settings['PREFIX'].'_custid' => $custid,
-			$settings['PREFIX'].'_cost' => $service_cost,
-			$settings['PREFIX'].'_frequency' => $frequency,
-			$settings['PREFIX'].'_order_date' => $now,
-			$settings['PREFIX'].'_ip' => $ip,
-			$settings['PREFIX'].'_status' => 'active',
-			$settings['PREFIX'].'_invoice' => $rid,
-			$settings['PREFIX'].'_hostname' => ''
-		]), __LINE__, __FILE__);
-		$serviceid = $db->getLastInsertId($settings['TABLE'], $settings['PREFIX'].'_id');
-		$repeat_invoice->set_service($serviceid)->save();
-		$invoice->set_service($serviceid)->save();
-		add_output('Patchman License Added');
+		return;
 	}
+	$repeat_invoice = new \MyAdmin\Orm\Repeat_Invoice($db);
+	$repeat_invoice->set_description('Patchman')
+		->set_type(1)
+		->set_custid($custid)
+		->set_cost($service_cost)
+		->setFrequency($frequency)
+		->set_date($now)
+		->set_module('licenses')
+		->save();
+	$rid = $repeat_invoice->get_id();
+	$invoice = $repeat_invoice->invoice($now, $service_cost, FALSE);
+	$iid = $invoice->get_id();
+	$db->query(make_insert_query($settings['TABLE'], [
+		$settings['PREFIX'].'_id' => null,
+		$settings['PREFIX'].'_type' => $package_id,
+		$settings['PREFIX'].'_custid' => $custid,
+		$settings['PREFIX'].'_cost' => $service_cost,
+		$settings['PREFIX'].'_frequency' => $frequency,
+		$settings['PREFIX'].'_order_date' => $now,
+		$settings['PREFIX'].'_ip' => $ip,
+		$settings['PREFIX'].'_status' => 'active',
+		$settings['PREFIX'].'_invoice' => $rid,
+		$settings['PREFIX'].'_hostname' => ''
+	]), __LINE__, __FILE__);
+	$serviceid = $db->getLastInsertId($settings['TABLE'], $settings['PREFIX'].'_id');
+	$repeat_invoice->set_service($serviceid)->save();
+	$invoice->set_service($serviceid)->save();
+	add_output('Patchman License Added');
 
 
 }
