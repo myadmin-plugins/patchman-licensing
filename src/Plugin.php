@@ -57,10 +57,17 @@ class Plugin {
 	public static function getDeactivate(GenericEvent $event) {
 		$serviceClass = $event->getSubject();
 		if ($event['category'] == get_service_define('PATCHMAN')) {
-			myadmin_log(self::$module, 'info', 'Patchman Deactivation', __LINE__, __FILE__);
+			$subject = 'Patchman Deactivation for '.$serviceClass->getIp();
+			myadmin_log(self::$module, 'info', $subject, __LINE__, __FILE__);
+			$body = $subject.PHP_EOL.PHP_EOL.'SUPPORT: This is a notification for billing. Please do not reply to or close this ticket. ';
+			$fromEmail = 'noreply@interserver.net';
+			$fromName = 'No Reply';
 			//function_requirements('deactivate_patchman');
 			//deactivate_patchman($serviceClass->getIp());
-			mail('support@interserver.net', 'Patchman Deactivation for '.$serviceClass->getIp(), 'Patchman Deactivation for '.$serviceClass->getIp(), get_default_mail_headers());
+			function_requirements('create_ky_ticket');
+			$success = create_ky_ticket($fromEmail, $subject, $body, $fromName);
+			if ($success == FALSE)
+				mail('support@interserver.net', $subject, $body, get_default_mail_headers(['TITLE' => $fromName,'EMAIL_FROM' => $fromEmail]));
 			$event->stopPropagation();
 		}
 	}
