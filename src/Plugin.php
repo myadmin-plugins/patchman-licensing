@@ -102,8 +102,8 @@ class Plugin {
 	public static function getMenu(GenericEvent $event) {
 		$menu = $event->getSubject();
 		if ($GLOBALS['tf']->ima == 'admin') {
-			$menu->add_link(self::$module, 'choice=none.reusable_patchman', 'images/icons/database_warning_48.png', 'ReUsable Patchman Licenses');
-			$menu->add_link(self::$module, 'choice=none.patchman_list', 'images/icons/database_warning_48.png', 'Patchman Licenses Breakdown');
+			$menu->add_link(self::$module, 'choice=none.reusable_patchman', '/images/myadmin/to-do.png', 'ReUsable Patchman Licenses');
+			$menu->add_link(self::$module, 'choice=none.patchman_list', '/images/myadmin/to-do.png', 'Patchman Licenses Breakdown');
 			$menu->add_link(self::$module.'api', 'choice=none.patchman_licenses_list', '/images/whm/createacct.gif', 'List all Patchman Licenses');
 		}
 	}
