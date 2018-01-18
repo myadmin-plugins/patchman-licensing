@@ -24,5 +24,5 @@ composer require detain/myadmin-patchman-licensing
 
 ## License
 
-The Patchman Licensing Class class is licensed under the LGPL-v2 license.
+The Patchman Licensing Class class is licensed under the LGPL-v2.1 license.
 
