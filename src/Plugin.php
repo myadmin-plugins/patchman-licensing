@@ -10,8 +10,8 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  *
  * @package Detain\MyAdminPatchman
  */
-class Plugin {
-
+class Plugin
+{
 	public static $name = 'PatchMan Licensing';
 	public static $description = 'Allows selling of PatchMan Licenses.  More info at https://www.patchman.com/';
 	public static $help = '';
@@ -21,13 +21,15 @@ class Plugin {
 	/**
 	 * Plugin constructor.
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 	}
 
 	/**
 	 * @return array
 	 */
-	public static function getHooks() {
+	public static function getHooks()
+	{
 		return [
 			self::$module.'.settings' => [__CLASS__, 'getSettings'],
 			self::$module.'.activate' => [__CLASS__, 'getActivate'],
@@ -41,7 +43,8 @@ class Plugin {
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function getActivate(GenericEvent $event) {
+	public static function getActivate(GenericEvent $event)
+	{
 		$serviceClass = $event->getSubject();
 		if ($event['category'] == get_service_define('PATCHMAN')) {
 			myadmin_log(self::$module, 'info', 'Patchman Activation', __LINE__, __FILE__);
@@ -54,7 +57,8 @@ class Plugin {
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function getDeactivate(GenericEvent $event) {
+	public static function getDeactivate(GenericEvent $event)
+	{
 		$serviceClass = $event->getSubject();
 		if ($event['category'] == get_service_define('PATCHMAN')) {
 			$subject = 'Patchman Deactivation for '.$serviceClass->getIp();
@@ -66,8 +70,9 @@ class Plugin {
 			//deactivate_patchman($serviceClass->getIp());
 			function_requirements('create_ky_ticket');
 			$success = create_ky_ticket($fromEmail, $subject, $body, $fromName);
-			if ($success == FALSE)
+			if ($success == false) {
 				mail('support@interserver.net', $subject, $body, get_default_mail_headers(['TITLE' => $fromName,'EMAIL_FROM' => $fromEmail]));
+			}
 			$event->stopPropagation();
 		}
 	}
@@ -75,7 +80,8 @@ class Plugin {
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function getChangeIp(GenericEvent $event) {
+	public static function getChangeIp(GenericEvent $event)
+	{
 		if ($event['category'] == get_service_define('PATCHMAN')) {
 			$serviceClass = $event->getSubject();
 			$settings = get_module_settings(self::$module);
@@ -99,7 +105,8 @@ class Plugin {
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function getMenu(GenericEvent $event) {
+	public static function getMenu(GenericEvent $event)
+	{
 		$menu = $event->getSubject();
 		if ($GLOBALS['tf']->ima == 'admin') {
 			$menu->add_link(self::$module, 'choice=none.reusable_patchman', '/images/myadmin/to-do.png', 'ReUsable Patchman Licenses');
@@ -111,7 +118,8 @@ class Plugin {
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function getRequirements(GenericEvent $event) {
+	public static function getRequirements(GenericEvent $event)
+	{
 		$loader = $event->getSubject();
 		$loader->add_admin_page_requirement('add_patchman', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
 		$loader->add_requirement('activate_patchman', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
@@ -121,11 +129,11 @@ class Plugin {
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function getSettings(GenericEvent $event) {
+	public static function getSettings(GenericEvent $event)
+	{
 		$settings = $event->getSubject();
 		$settings->add_text_setting(self::$module, 'PatchMan', 'patchman_username', 'Patchman Username:', 'Patchman Username', $settings->get_setting('PATCHMAN_USERNAME'));
 		$settings->add_text_setting(self::$module, 'PatchMan', 'patchman_password', 'Patchman Password:', 'Patchman Password', $settings->get_setting('PATCHMAN_PASSWORD'));
 		$settings->add_dropdown_setting(self::$module, 'PatchMan', 'outofstock_licenses_patchman', 'Out Of Stock PatchMan Licenses', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_LICENSES_PATCHMAN'), ['0', '1'], ['No', 'Yes']);
 	}
-
 }

@@ -8,7 +8,8 @@
 */
 
 
-function add_patchman() {
+function add_patchman()
+{
 	$module = $GLOBALS['tf']->variables->request['module'];
 	$id = $GLOBALS['tf']->variables->request['id'];
 	$serviceInfo = get_service($id, $module);
@@ -56,7 +57,7 @@ function add_patchman() {
 		->set_module('licenses')
 		->save();
 	$rid = $repeat_invoice->get_id();
-	$invoice = $repeat_invoice->invoice($now, $service_cost, FALSE);
+	$invoice = $repeat_invoice->invoice($now, $service_cost, false);
 	$iid = $invoice->get_id();
 	$db->query(make_insert_query($settings['TABLE'], [
 		$settings['PREFIX'].'_id' => null,
@@ -74,8 +75,6 @@ function add_patchman() {
 	$repeat_invoice->set_service($serviceid)->save();
 	$invoice->set_service($serviceid)->save();
 	add_output('Patchman License Added');
-
-
 }
 
 /**
@@ -84,29 +83,37 @@ function add_patchman() {
  * @param bool|string[] $options
  * @return string
  */
-function patchman_req($page, $post = '', $options = FALSE) {
-	if ($options === FALSE)
+function patchman_req($page, $post = '', $options = false)
+{
+	if ($options === false) {
 		$options = [];
+	}
 	$defaultOptions = [
 		CURLOPT_USERPWD => PATCHMAN_USERNAME.':'.PATCHMAN_PASSWORD,
 		CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
-		CURLOPT_SSL_VERIFYHOST => FALSE,
-		CURLOPT_SSL_VERIFYPEER => FALSE
+		CURLOPT_SSL_VERIFYHOST => false,
+		CURLOPT_SSL_VERIFYPEER => false
 	];
-	foreach ($defaultOptions as $key => $value)
-		if (!isset($options[$key]))
+	foreach ($defaultOptions as $key => $value) {
+		if (!isset($options[$key])) {
 			$options[$key] = $value;
+		}
+	}
 	if (!is_url($page)) {
-		if (mb_strpos($page, '.php') === FALSE)
+		if (mb_strpos($page, '.php') === false) {
 			$page .= '.php';
-		if (mb_strpos($page, '/') === FALSE)
+		}
+		if (mb_strpos($page, '/') === false) {
 			$page = "clients/api/{$page}";
-		elseif (mb_strpos($page, 'api/') === FALSE)
+		} elseif (mb_strpos($page, 'api/') === false) {
 			$page = "api/{$page}";
-		if (mb_strpos($page, 'clients/') === FALSE)
+		}
+		if (mb_strpos($page, 'clients/') === false) {
 			$page == "clients/{$page}";
-		if (!is_url($page))
+		}
+		if (!is_url($page)) {
 			$page = "https://www.patchman.co/{$page}";
+		}
 	}
 	return trim(getcurlpage($page, $post, $options));
 }
@@ -114,11 +121,13 @@ function patchman_req($page, $post = '', $options = FALSE) {
 /**
  * @return array
  */
-function get_patchman_licenses() {
+function get_patchman_licenses()
+{
 	$response = patchman_req('list');
 	$licenses = [];
-	if (trim($response) == '')
+	if (trim($response) == '') {
 		return $licenses;
+	}
 	$lines = explode("\n", trim($response));
 	$linesValues = array_values($lines);
 	foreach ($linesValues as $line) {
@@ -132,7 +141,8 @@ function get_patchman_licenses() {
  * @param $lid
  * @return string
  */
-function get_patchman_license($lid) {
+function get_patchman_license($lid)
+{
 	$response = patchman_req('license', ['lid' => $lid]);
 	_debug_array($response);
 	return $response;
@@ -142,25 +152,30 @@ function get_patchman_license($lid) {
  * @param $ipAddress
  * @return bool|mixed
  */
-function get_patchman_license_by_ip($ipAddress) {
+function get_patchman_license_by_ip($ipAddress)
+{
 	$licenses = get_patchman_licenses();
 	$licensesValues = array_values($licenses);
-	foreach ($licensesValues as $license)
-		if ($license['ip'] == $ipAddress)
+	foreach ($licensesValues as $license) {
+		if ($license['ip'] == $ipAddress) {
 			return $license;
-	return FALSE;
+		}
+	}
+	return false;
 }
 
 /**
  * @param $ipAddress
  * @return bool
  */
-function patchman_ip_to_lid($ipAddress) {
+function patchman_ip_to_lid($ipAddress)
+{
 	$license = get_patchman_license_by_ip($ipAddress);
-	if ($license === FALSE)
-		return FALSE;
-	else
+	if ($license === false) {
+		return false;
+	} else {
 		return $license['lid'];
+	}
 }
 
 /**
@@ -174,11 +189,12 @@ function patchman_ip_to_lid($ipAddress) {
  * @param string $domain
  * @param false|int $custid optional customer id number or null for none
  */
-function activate_patchman($ipAddress, $ostype, $pass, $email, $name, $domain = '', $custid = null) {
+function activate_patchman($ipAddress, $ostype, $pass, $email, $name, $domain = '', $custid = null)
+{
 	myadmin_log('licenses', 'info', "Called activate_patchman($ipAddress, $ostype, $pass, $email, $name, $domain)", __LINE__, __FILE__);
 	$settings = \get_module_settings('licenses');
 	$license = get_patchman_license_by_ip($ipAddress);
-	if ($license === FALSE) {
+	if ($license === false) {
 		$options = [
 			CURLOPT_REFERER => 'https://www.patchman.com/clients/createlicense.php'
 		];
@@ -204,10 +220,11 @@ function activate_patchman($ipAddress, $ostype, $pass, $email, $name, $domain = 
 			'ns1ip' => '66.45.228.78',
 			'ns2ip' => '66.45.228.3'
 		];
-		if ($domain != '')
+		if ($domain != '') {
 			$post['domain'] = $domain;
-		else
+		} else {
 			$post['domain'] = $post['ip'];
+		}
 		$url = 'https://www.patchman.com/cgi-bin/createlicense';
 		$response = patchman_req($url, $post, $options);
 		myadmin_log('licenses', 'info', $response, __LINE__, __FILE__);
@@ -215,7 +232,6 @@ function activate_patchman($ipAddress, $ostype, $pass, $email, $name, $domain = 
 			$lid = $matches[1];
 			$response = patchman_makepayment($lid);
 			myadmin_log('licenses', 'info', $response, __LINE__, __FILE__);
-
 		}
 		$GLOBALS['tf']->history->add($settings['TABLE'], 'add_patchman', 'ip', $ipAddress, $custid);
 	}
@@ -226,7 +242,8 @@ function activate_patchman($ipAddress, $ostype, $pass, $email, $name, $domain = 
  * @param mixed $ipAddress
  * @return string|null
  */
-function deactivate_patchman($ipAddress) {
+function deactivate_patchman($ipAddress)
+{
 	$license = get_patchman_license_by_ip($ipAddress);
 	if ($license['active'] == 'Y') {
 		$url = 'https://www.patchman.com/cgi-bin/deletelicense';
@@ -250,7 +267,7 @@ function deactivate_patchman($ipAddress) {
  * @param $ipAddress
  * @return null|string
  */
-function patchman_deactivate($ipAddress) {
+function patchman_deactivate($ipAddress)
+{
 	return deactivate_patchman($ipAddress);
 }
-
