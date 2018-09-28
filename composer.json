@@ -1,5 +1,5 @@
 {
-	"name": "detain/myadmin-patchman-licensing",
+	"name": "detain/patchman-licensing",
 	"type": "myadmin-plugin",
 	"description": "Patchman Licensing Class",
 	"keywords": [
