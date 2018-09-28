@@ -121,9 +121,9 @@ class Plugin
 	public static function getRequirements(GenericEvent $event)
 	{
 		$loader = $event->getSubject();
-		$loader->add_admin_page_requirement('add_patchman', '/../vendor/detain/patchman-licensing/src/patchman.inc.php');
-		$loader->add_requirement('activate_patchman', '/../vendor/detain/patchman-licensing/src/patchman.inc.php');
-		$loader->add_requirement('deactivate_patchman', '/../vendor/detain/patchman-licensing/src/patchman.inc.php');
+		$loader->add_admin_page_requirement('add_patchman', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
+		$loader->add_requirement('activate_patchman', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
+		$loader->add_requirement('deactivate_patchman', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
 	}
 
 	/**
