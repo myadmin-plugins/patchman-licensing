@@ -109,9 +109,9 @@ class Plugin
 	{
 		$menu = $event->getSubject();
 		if ($GLOBALS['tf']->ima == 'admin') {
-			$menu->add_link(self::$module, 'choice=none.reusable_patchman', '/images/myadmin/to-do.png', 'ReUsable Patchman Licenses');
-			$menu->add_link(self::$module, 'choice=none.patchman_list', '/images/myadmin/to-do.png', 'Patchman Licenses Breakdown');
-			$menu->add_link(self::$module.'api', 'choice=none.patchman_licenses_list', '/images/whm/createacct.gif', 'List all Patchman Licenses');
+			$menu->add_link(self::$module, 'choice=none.reusable_patchman', '/images/myadmin/to-do.png', __('ReUsable Patchman Licenses'));
+			$menu->add_link(self::$module, 'choice=none.patchman_list', '/images/myadmin/to-do.png', __('Patchman Licenses Breakdown'));
+			$menu->add_link(self::$module.'api', 'choice=none.patchman_licenses_list', '/images/whm/createacct.gif', __('List all Patchman Licenses'));
 		}
 	}
 
@@ -120,7 +120,10 @@ class Plugin
 	 */
 	public static function getRequirements(GenericEvent $event)
 	{
-		$loader = $event->getSubject();
+        /**
+         * @var \MyAdmin\Plugins\Loader $this->loader
+         */
+        $loader = $event->getSubject();
 		$loader->add_admin_page_requirement('add_patchman', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
 		$loader->add_requirement('activate_patchman', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
 		$loader->add_requirement('deactivate_patchman', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
@@ -129,11 +132,14 @@ class Plugin
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function getSettings(GenericEvent $event)
-	{
-		$settings = $event->getSubject();
-		$settings->add_text_setting(self::$module, 'PatchMan', 'patchman_username', 'Patchman Username:', 'Patchman Username', $settings->get_setting('PATCHMAN_USERNAME'));
-		$settings->add_text_setting(self::$module, 'PatchMan', 'patchman_password', 'Patchman Password:', 'Patchman Password', $settings->get_setting('PATCHMAN_PASSWORD'));
-		$settings->add_dropdown_setting(self::$module, 'PatchMan', 'outofstock_licenses_patchman', 'Out Of Stock PatchMan Licenses', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_LICENSES_PATCHMAN'), ['0', '1'], ['No', 'Yes']);
+    public static function getSettings(GenericEvent $event)
+    {
+        /**
+         * @var \MyAdmin\Settings $settings
+         **/
+        $settings = $event->getSubject();
+		$settings->add_text_setting(self::$module, __('PatchMan'), 'patchman_username', __('Patchman Username'), __('Patchman Username'), $settings->get_setting('PATCHMAN_USERNAME'));
+		$settings->add_text_setting(self::$module, __('PatchMan'), 'patchman_password', __('Patchman Password'), __('Patchman Password'), $settings->get_setting('PATCHMAN_PASSWORD'));
+		$settings->add_dropdown_setting(self::$module, __('PatchMan'), 'outofstock_licenses_patchman', __('Out Of Stock PatchMan Licenses'), __('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_LICENSES_PATCHMAN'), ['0', '1'], ['No', 'Yes']);
 	}
 }
