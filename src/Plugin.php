@@ -109,9 +109,9 @@ class Plugin
 	{
 		$menu = $event->getSubject();
 		if ($GLOBALS['tf']->ima == 'admin') {
-			$menu->add_link(self::$module, 'choice=none.reusable_patchman', '/images/myadmin/to-do.png', __('ReUsable Patchman Licenses'));
-			$menu->add_link(self::$module, 'choice=none.patchman_list', '/images/myadmin/to-do.png', __('Patchman Licenses Breakdown'));
-			$menu->add_link(self::$module.'api', 'choice=none.patchman_licenses_list', '/images/whm/createacct.gif', __('List all Patchman Licenses'));
+			$menu->add_link(self::$module, 'choice=none.reusable_patchman', '/images/myadmin/to-do.png', _('ReUsable Patchman Licenses'));
+			$menu->add_link(self::$module, 'choice=none.patchman_list', '/images/myadmin/to-do.png', _('Patchman Licenses Breakdown'));
+			$menu->add_link(self::$module.'api', 'choice=none.patchman_licenses_list', '/images/whm/createacct.gif', _('List all Patchman Licenses'));
 		}
 	}
 
@@ -138,8 +138,8 @@ class Plugin
          * @var \MyAdmin\Settings $settings
          **/
         $settings = $event->getSubject();
-		$settings->add_text_setting(self::$module, __('PatchMan'), 'patchman_username', __('Patchman Username'), __('Patchman Username'), $settings->get_setting('PATCHMAN_USERNAME'));
-		$settings->add_text_setting(self::$module, __('PatchMan'), 'patchman_password', __('Patchman Password'), __('Patchman Password'), $settings->get_setting('PATCHMAN_PASSWORD'));
-		$settings->add_dropdown_setting(self::$module, __('PatchMan'), 'outofstock_licenses_patchman', __('Out Of Stock PatchMan Licenses'), __('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_LICENSES_PATCHMAN'), ['0', '1'], ['No', 'Yes']);
+		$settings->add_text_setting(self::$module, _('PatchMan'), 'patchman_username', _('Patchman Username'), _('Patchman Username'), $settings->get_setting('PATCHMAN_USERNAME'));
+		$settings->add_text_setting(self::$module, _('PatchMan'), 'patchman_password', _('Patchman Password'), _('Patchman Password'), $settings->get_setting('PATCHMAN_PASSWORD'));
+		$settings->add_dropdown_setting(self::$module, _('PatchMan'), 'outofstock_licenses_patchman', _('Out Of Stock PatchMan Licenses'), _('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_LICENSES_PATCHMAN'), ['0', '1'], ['No', 'Yes']);
 	}
 }
