@@ -258,7 +258,7 @@ function deactivate_patchman($ipAddress)
 			CURLOPT_REFERER => 'https://www.patchman.com/clients/license.php?lid='.$license['lid']
 		];
 		$response = patchman_req($url, $post, $options);
-		myadmin_log('licenses', 'info', $response, __LINE__, __FILE__);
+		myadmin_log('licenses', 'info', $response, __LINE__, __FILE__, $module);
 		return $response;
 	}
 }
