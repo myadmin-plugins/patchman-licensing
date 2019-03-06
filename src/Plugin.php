@@ -47,7 +47,7 @@ class Plugin
 	{
 		$serviceClass = $event->getSubject();
 		if ($event['category'] == get_service_define('PATCHMAN')) {
-			myadmin_log(self::$module, 'info', 'Patchman Activation', __LINE__, __FILE__);
+			myadmin_log(self::$module, 'info', 'Patchman Activation', __LINE__, __FILE__, self::$module, $serviceClass->getId());
 			//function_requirements('activate_patchman');
 			//activate_patchman($serviceClass->getIp(), patchman_get_best_type(self::$module, $serviceClass->getType()), $event['email'], $event['email'], self::$module.$serviceClass->getId(), '');
 			$event->stopPropagation();
@@ -62,7 +62,7 @@ class Plugin
 		$serviceClass = $event->getSubject();
 		if ($event['category'] == get_service_define('PATCHMAN')) {
 			$subject = 'Patchman Deactivation for '.$serviceClass->getIp();
-			myadmin_log(self::$module, 'info', $subject, __LINE__, __FILE__);
+			myadmin_log(self::$module, 'info', $subject, __LINE__, __FILE__, self::$module, $serviceClass->getId());
 			$body = $subject.PHP_EOL.PHP_EOL.'SUPPORT: This is a notification for billing. Please do not reply to or close this ticket. ';
 			$fromEmail = 'noreply@interserver.net';
 			$fromName = 'No Reply';
@@ -86,7 +86,7 @@ class Plugin
 			$serviceClass = $event->getSubject();
 			$settings = get_module_settings(self::$module);
 			$patchman = new \Patchman(FANTASTICO_USERNAME, FANTASTICO_PASSWORD);
-			myadmin_log(self::$module, 'info', 'IP Change - (OLD:'.$serviceClass->getIp().") (NEW:{$event['newip']})", __LINE__, __FILE__);
+			myadmin_log(self::$module, 'info', 'IP Change - (OLD:'.$serviceClass->getIp().") (NEW:{$event['newip']})", __LINE__, __FILE__, self::$module, $serviceClass->getId());
 			$result = $patchman->editIp($serviceClass->getIp(), $event['newip']);
 			if (isset($result['faultcode'])) {
 				myadmin_log(self::$module, 'error', 'Patchman editIp('.$serviceClass->getIp().', '.$event['newip'].') returned Fault '.$result['faultcode'].': '.$result['fault'], __LINE__, __FILE__, self::$module);
