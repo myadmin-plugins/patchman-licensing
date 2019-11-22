@@ -6,10 +6,10 @@ namespace Detain\MyAdminPatchman;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
- * Class Plugin
- *
- * @package Detain\MyAdminPatchman
- */
+* Class Plugin
+*
+* @package Detain\MyAdminPatchman
+*/
 class Plugin
 {
 	public static $name = 'PatchMan Licensing';
@@ -19,15 +19,15 @@ class Plugin
 	public static $type = 'service';
 
 	/**
-	 * Plugin constructor.
-	 */
+	* Plugin constructor.
+	*/
 	public function __construct()
 	{
 	}
 
 	/**
-	 * @return array
-	 */
+	* @return array
+	*/
 	public static function getHooks()
 	{
 		return [
@@ -41,8 +41,8 @@ class Plugin
 	}
 
 	/**
-	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
-	 */
+	* @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	*/
 	public static function getActivate(GenericEvent $event)
 	{
 		$serviceClass = $event->getSubject();
@@ -55,8 +55,8 @@ class Plugin
 	}
 
 	/**
-	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
-	 */
+	* @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	*/
 	public static function getDeactivate(GenericEvent $event)
 	{
 		$serviceClass = $event->getSubject();
@@ -78,8 +78,8 @@ class Plugin
 	}
 
 	/**
-	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
-	 */
+	* @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	*/
 	public static function getChangeIp(GenericEvent $event)
 	{
 		if ($event['category'] == get_service_define('PATCHMAN')) {
@@ -103,8 +103,8 @@ class Plugin
 	}
 
 	/**
-	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
-	 */
+	* @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	*/
 	public static function getMenu(GenericEvent $event)
 	{
 		$menu = $event->getSubject();
@@ -116,13 +116,13 @@ class Plugin
 	}
 
 	/**
-	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
-	 */
+	* @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	*/
 	public static function getRequirements(GenericEvent $event)
 	{
 		/**
-		 * @var \MyAdmin\Plugins\Loader $this->loader
-		 */
+		* @var \MyAdmin\Plugins\Loader $this->loader
+		*/
 		$loader = $event->getSubject();
 		$loader->add_admin_page_requirement('add_patchman', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
 		$loader->add_requirement('activate_patchman', '/../vendor/detain/myadmin-patchman-licensing/src/patchman.inc.php');
@@ -130,13 +130,13 @@ class Plugin
 	}
 
 	/**
-	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
-	 */
+	* @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	*/
 	public static function getSettings(GenericEvent $event)
 	{
 		/**
-		 * @var \MyAdmin\Settings $settings
-		 **/
+		* @var \MyAdmin\Settings $settings
+		**/
 		$settings = $event->getSubject();
 		$settings->add_text_setting(self::$module, _('PatchMan'), 'patchman_username', _('Patchman Username'), _('Patchman Username'), $settings->get_setting('PATCHMAN_USERNAME'));
 		$settings->add_text_setting(self::$module, _('PatchMan'), 'patchman_password', _('Patchman Password'), _('Patchman Password'), $settings->get_setting('PATCHMAN_PASSWORD'));
