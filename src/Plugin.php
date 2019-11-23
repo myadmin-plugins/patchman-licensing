@@ -64,14 +64,12 @@ class Plugin
 			$subject = 'Patchman Deactivation for '.$serviceClass->getIp();
 			myadmin_log(self::$module, 'info', $subject, __LINE__, __FILE__, self::$module, $serviceClass->getId());
 			$body = $subject.PHP_EOL.PHP_EOL.'SUPPORT: This is a notification for billing. Please do not reply to or close this ticket. ';
-			$fromEmail = 'noreply@interserver.net';
-			$fromName = 'No Reply';
 			//function_requirements('deactivate_patchman');
 			//deactivate_patchman($serviceClass->getIp());
 			function_requirements('create_ky_ticket');
 			$success = create_ky_ticket($fromEmail, $subject, $body, $fromName);
 			if ($success == false) {
-				mail('support@interserver.net', $subject, $body, get_default_mail_headers(['TITLE' => $fromName,'EMAIL_FROM' => $fromEmail]));
+				(new \MyAdmin\Mail())->clientMail($subject, $body, 'support@interserver.net', '');
 			}
 			$event->stopPropagation();
 		}
