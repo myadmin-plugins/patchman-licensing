@@ -63,8 +63,6 @@ function add_patchman()
 		$settings['PREFIX'].'_id' => null,
 		$settings['PREFIX'].'_type' => $package_id,
 		$settings['PREFIX'].'_custid' => $custid,
-		$settings['PREFIX'].'_cost' => $service_cost,
-		$settings['PREFIX'].'_frequency' => $frequency,
 		$settings['PREFIX'].'_order_date' => $now,
 		$settings['PREFIX'].'_ip' => $ip,
 		$settings['PREFIX'].'_status' => 'active',
