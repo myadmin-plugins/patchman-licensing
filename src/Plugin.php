@@ -137,7 +137,7 @@ class Plugin
         **/
         $settings = $event->getSubject();
         $settings->add_text_setting(self::$module, _('PatchMan'), 'patchman_username', _('Patchman Username'), _('Patchman Username'), $settings->get_setting('PATCHMAN_USERNAME'));
-        $settings->add_text_setting(self::$module, _('PatchMan'), 'patchman_password', _('Patchman Password'), _('Patchman Password'), $settings->get_setting('PATCHMAN_PASSWORD'));
+        $settings->add_password_setting(self::$module, _('PatchMan'), 'patchman_password', _('Patchman Password'), _('Patchman Password'), $settings->get_setting('PATCHMAN_PASSWORD'));
         $settings->add_dropdown_setting(self::$module, _('PatchMan'), 'outofstock_licenses_patchman', _('Out Of Stock PatchMan Licenses'), _('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_LICENSES_PATCHMAN'), ['0', '1'], ['No', 'Yes']);
     }
 }
