@@ -67,7 +67,7 @@ function add_patchman()
         $settings['PREFIX'].'_ip' => $ip,
         $settings['PREFIX'].'_status' => 'active',
         $settings['PREFIX'].'_invoice' => $rid,
-        $settings['PREFIX'].'_hostname' => isset($serviceInfo[$serviceSettings['PREFIX'].'_hostname']) ? $serviceInfo[$serviceSettings['PREFIX'].'_hostname'] : ''
+        $settings['PREFIX'].'_hostname' => $serviceInfo[$serviceSettings['PREFIX'].'_hostname'] ?? ''
     ]), __LINE__, __FILE__);
     $serviceid = $db->getLastInsertId($settings['TABLE'], $settings['PREFIX'].'_id');
     $repeat_invoice->set_service($serviceid)->save();
