@@ -10,8 +10,8 @@
 
 function add_patchman()
 {
-    $module = $GLOBALS['tf']->variables->request['module'];
-    $id = $GLOBALS['tf']->variables->request['id'];
+    $module = \MyAdmin\App::variables()->request['module'];
+    $id = \MyAdmin\App::variables()->request['id'];
     $serviceInfo = get_service($id, $module);
     $serviceSettings = get_module_settings($module);
     $settings = get_module_settings('licenses');
@@ -27,7 +27,7 @@ function add_patchman()
         add_output('IP '.$ip.' Already Licensed for PatchMan');
         return;
     }
-    if (!isset($GLOBALS['tf']->variables->request['confirm'])) {
+    if (!isset(\MyAdmin\App::variables()->request['confirm'])) {
         $table = new TFTable();
         $table->set_title('Add Patchman');
         $table->add_hidden('id', $id);
@@ -231,7 +231,7 @@ function activate_patchman($ipAddress, $ostype, $pass, $email, $name, $domain = 
             $response = patchman_makepayment($lid);
             myadmin_log('licenses', 'info', $response, __LINE__, __FILE__);
         }
-        $GLOBALS['tf']->history->add($settings['TABLE'], 'add_patchman', 'ip', $ipAddress, $custid);
+        \MyAdmin\App::history()->add($settings['TABLE'], 'add_patchman', 'ip', $ipAddress, $custid);
     }
 }
 
