@@ -49,7 +49,12 @@ class Plugin
         if ($event['category'] == get_service_define('PATCHMAN')) {
             myadmin_log(self::$module, 'info', 'Patchman Activation', __LINE__, __FILE__, self::$module, $serviceClass->getId());
             //function_requirements('activate_patchman');
-            //activate_patchman($serviceClass->getIp(), patchman_get_best_type(self::$module, $serviceClass->getType()), $event['email'], $event['email'], self::$module.$serviceClass->getId(), '');
+            //$response = activate_patchman($serviceClass->getIp(), patchman_get_best_type(self::$module, $serviceClass->getType()), $event['email'], $event['email'], self::$module.$serviceClass->getId(), '');
+            //if ($response === false) {
+            //    $event['success'] = false;
+            //    myadmin_log(self::$module, 'error', 'Patchman activate_patchman returned false for IP '.$serviceClass->getIp(), __LINE__, __FILE__, self::$module, $serviceClass->getId());
+            //    chatNotify('Failed [License '.$serviceClass->getId().'](https://my.interserver.net/admin/view_service?id='.$serviceClass->getId().'&module=licenses) Patchman Activation IP:'.$serviceClass->getIp().' - activate_patchman() returned false', 'notifications');
+            //}
             $event->stopPropagation();
         }
     }
