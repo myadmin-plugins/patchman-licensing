@@ -1,6 +1,6 @@
 ---
 name: phpunit-source-tests
-description: Writes PHPUnit 9.6 tests using source-inspection (file_get_contents + assertStringContainsString / assertMatchesRegularExpression) and reflection (ReflectionClass) patterns. Use when adding tests for new functions in src/patchman.inc.php or new methods in src/Plugin.php. Trigger phrases: 'write test', 'add phpunit', 'test function', 'test plugin'. Do NOT use for integration tests requiring a live database or live cURL calls. NOTE: for a plugin's contract/behavioral tests (tests/ContractTest.php, the shared harness, composer myadmin:scaffold-tests) use the plugin-contract-tests skill instead — this skill's reflection-only guidance predates that harness.
+description: Writes PHPUnit 9.6 tests using source-inspection (file_get_contents + assertStringContainsString / assertMatchesRegularExpression) and reflection (ReflectionClass) patterns. Use when adding tests for new functions in src/patchman.inc.php or new methods in src/Plugin.php. Trigger phrases: 'write test', 'add phpunit', 'test function', 'test plugin'. Do NOT use for integration tests requiring a live database or live cURL calls. For a plugin's contract or behavioral tests (tests/ContractTest.php, the shared harness, composer myadmin:scaffold-tests) use the plugin-contract-tests skill instead — this skill's reflection-only guidance predates that harness.
 ---
 <!-- myadmin-contract-harness-notice -->
 > ### ⚠️ Read this before the rest of the file

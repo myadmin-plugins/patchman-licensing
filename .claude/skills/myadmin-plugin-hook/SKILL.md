@@ -1,6 +1,6 @@
 ---
 name: myadmin-plugin-hook
-description: Adds or modifies Symfony EventDispatcher hooks in src/Plugin.php following the getHooks()/GenericEvent pattern. Ensures correct guard (get_service_define), stopPropagation(), and myadmin_log() calls. Use when adding new event handlers to Plugin::getHooks(), wiring licenses.* events, or implementing getMenu/getSettings/getRequirements. Trigger phrases: 'add hook', 'new event', 'plugin method', 'register handler'. Do NOT use for src/patchman.inc.php API functions. NOTE: for a plugin's contract/behavioral tests (tests/ContractTest.php, the shared harness, composer myadmin:scaffold-tests) use the plugin-contract-tests skill instead — this skill's reflection-only guidance predates that harness.
+description: Adds or modifies Symfony EventDispatcher hooks in src/Plugin.php following the getHooks()/GenericEvent pattern. Ensures correct guard (get_service_define), stopPropagation(), and myadmin_log() calls. Use when adding new event handlers to Plugin::getHooks(), wiring licenses.* events, or implementing getMenu/getSettings/getRequirements. Trigger phrases: 'add hook', 'new event', 'plugin method', 'register handler'. Do NOT use for src/patchman.inc.php API functions. For a plugin's contract or behavioral tests (tests/ContractTest.php, the shared harness, composer myadmin:scaffold-tests) use the plugin-contract-tests skill instead — this skill's reflection-only guidance predates that harness.
 ---
 <!-- myadmin-contract-harness-notice -->
 > ### ⚠️ Read this before the rest of the file
