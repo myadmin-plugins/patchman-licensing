@@ -64,6 +64,7 @@ function add_patchman()
         $settings['PREFIX'].'_type' => $package_id,
         $settings['PREFIX'].'_custid' => $custid,
         $settings['PREFIX'].'_order_date' => $now,
+        $settings['PREFIX'].'_uuid' => new_uuid_sql($now),
         $settings['PREFIX'].'_ip' => $ip,
         $settings['PREFIX'].'_status' => 'active',
         $settings['PREFIX'].'_invoice' => $rid,
